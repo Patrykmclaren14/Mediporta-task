@@ -1,11 +1,11 @@
-import { Link } from "react-router-dom"
+import PropTypes from 'prop-types';
 
-const Home = () => {
+const Home = ({size} : any) => {
   return (
     <section className="grid place-items-center min-h-screen">
-      <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-16">
-          <div className="relative h-64 overflow-hidden rounded-lg sm:h-80 lg:order-last lg:h-full">
+      <div className={`mx-auto max-w-screen-xl px-4 py-8  ${size === 'lg' ? 'lg:px-8 lg:py-16' : 'sm:px-6 sm:py-12'}`}>
+        <div className={`grid gap-8 ${size === 'lg' ? 'lg:grid-cols-2 lg:gap-16' : 'grid-cols-1'}`}>
+          <div className={`relative h-64 overflow-hidden rounded-lg ${size === 'lg' ? 'lg:order-last lg:h-full' : 'sm:h-80'}`}>
             <img
               alt="Developer"
               src={`/Developer.jpeg`}
@@ -13,8 +13,8 @@ const Home = () => {
             />
           </div>
 
-          <div className="lg:py-24">
-            <h2 className="text-3xl font-bold sm:text-4xl">
+          <div className={`${size === 'lg' ? 'lg:py-24' : '' }`}>
+            <h2 className={`text-3xl font-bold ${size === 'sm' ? 'sm:text-4xl' : 'text-5xl' }`}>
               Patryk Wierzbowski
             </h2>
 
@@ -34,19 +34,21 @@ const Home = () => {
               Patryk Wierzbowski
             </p>
 
-            <Link
-              to="/task"
-              className="mt-8 inline-block rounded bg-indigo-600 px-12
-                py-3 text-sm font-medium text-white transition hover:bg-indigo-700
-                focus:outline-none focus:ring focus:ring-yellow-400"
+            <a
+              href="/task"
+              className={`mt-8 inline-block rounded bg-indigo-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-indigo-700 focus:outline-none focus:ring focus:ring-yellow-400 ${size === 'sm' ? 'text-xs py-2' : size === 'lg' ? 'text-lg py-4' : ''}`}
             >
               Check my task
-            </Link>
+            </a>
           </div>
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Home
+Home.propTypes = {
+  size: PropTypes.oneOf(['sm', 'md', 'lg']),
+};
+
+export default Home;

@@ -31,6 +31,7 @@ const TagList = () => {
   // The useSearchParams hook returns an object containing the current URL query parameters
   const [searchParams, setSearchParams] = useSearchParams()
 
+
   // The useTheme hook returns the current Material-UI theme
   const theme = useTheme()
 
@@ -53,19 +54,21 @@ const TagList = () => {
     dispatch(fetchTags( page, pageSize, order, sort));
   }, [dispatch, page, pageSize, order, sort]);
 
-  // Handle parameter changes
+
+  // typy do any + object 
+
 
   // Function to handle page change in pagination
   const handleChangePage = (event: any, newPage: number) => {
     const nextPage = newPage + 1
-    searchParams.set("page", nextPage.toString())
+    searchParams.set('page', nextPage.toString())
     setSearchParams(searchParams)
   }
 
   // Function to handle rows per page change in pagination
   const handleChangeRowsPerPage = (event: any) => {
     const newRowsPerPage = parseInt(event.target.value, 10)
-    searchParams.set("rowsPerPage", newRowsPerPage.toString())
+    searchParams.set('rowsPerPage', newRowsPerPage.toString())
     setSearchParams(searchParams)
   }
 
@@ -84,14 +87,16 @@ const TagList = () => {
   }
 
   return (
-    <Box sx={{display: 'flex', justifyContent: 'center', minHeight: '100vh'}}>
+    <Box sx={{display: 'flex', justifyContent: 'center'}}>
       <Paper
         sx={{
           width: { xs: "100%", lg: "80%", xl: "60%" },
+          padding: '10px',
           my: theme.spacing(10),
+          boxShadow: 'none',
         }}
       >
-        <TableContainer sx={{display: 'flex', justifyContent: 'space-between', padding: '10px'}}>
+        <TableContainer sx={{display: 'flex', justifyContent: 'space-between', padding: '10px'}}> 
           <TableSortLabel sx={{display: 'flex', gap: '20px'}}>
             <Select value={order} onChange={handleOrderChange} sx={{width: '100px'}}>
               <MenuItem value="desc">Desc</MenuItem>
@@ -113,7 +118,7 @@ const TagList = () => {
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </TableContainer> 
-        <TableContainer sx={{ maxHeight: "none" }}>
+        <TableContainer>
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
@@ -124,7 +129,7 @@ const TagList = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {loading ? (
+              {loading && (
                 <SkeletonLoader
                   skeleton={{
                     numberOfSkeletons: pageSize,
@@ -136,10 +141,7 @@ const TagList = () => {
               ) : error ? (
                 <Error errorMessage={error} />
               ) : (
-                (pageSize > 0
-                  ? tags.slice(page * pageSize, page * pageSize + pageSize)
-                  : tags
-                ).map((tag) => (
+                tags.map((tag) => (
                   <TagTableRow key={tag.name} tag={tag} />
                 ))
               )}

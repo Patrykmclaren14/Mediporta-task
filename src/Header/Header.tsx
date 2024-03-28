@@ -36,10 +36,11 @@ const Header = () => {
                 </NavLink>
               </li>
               <li>
+                {/* cn utils */}
                 <NavLink
                   to="/task"
                   className={({ isActive }) =>
-                    isActive
+                    isActive 
                       ? 'text-gray-500 transition hover:text-gray-500/75" href="/" font-bold'
                       : 'text-gray-500 transition hover:text-gray-500/75" href="/"'
                   }

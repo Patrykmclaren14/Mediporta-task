@@ -36,7 +36,7 @@ const tagsSlice = createSlice({
 export const { fetchTagsStart, fetchTagsSuccess, fetchTagsFailure } =
   tagsSlice.actions
 
-export const fetchTags =
+export const fetchTags = 
   (page: number, pageSize: number, order: string, sort: string) => async (dispatch: any) => {
     dispatch(fetchTagsStart())
     try {
