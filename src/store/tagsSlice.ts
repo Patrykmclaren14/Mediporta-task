@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import axios from "axios"
 import Tag from "../types/Tag"
+import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 interface TagsState {
   tags: Tag[]
@@ -37,11 +37,11 @@ export const { fetchTagsStart, fetchTagsSuccess, fetchTagsFailure } =
   tagsSlice.actions
 
 export const fetchTags =
-  (page: number, pageSize: number, order: string) => async (dispatch: any) => {
+  (page: number, pageSize: number, order: string, sort: string) => async (dispatch: any) => {
     dispatch(fetchTagsStart())
     try {
       const response = await axios.get(
-        `https://api.stackexchange.com/2.3/tags?page=${page}&pagesize=${pageSize}&order=${order}&sort=popular&site=stackoverflow`,
+        `https://api.stackexchange.com/2.3/tags?page=${page}&pagesize=${pageSize}&order=${order}&sort=${sort}&site=stackoverflow`,
       )
       dispatch(fetchTagsSuccess(response.data.items))
     } catch (error) {
