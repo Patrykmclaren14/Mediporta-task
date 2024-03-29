@@ -1,57 +1,53 @@
-import axios from "axios"
-import Tag from "../types/Tag"
-import { PayloadAction, createSlice } from "@reduxjs/toolkit"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import Tag, { TagData } from "../types/Tag";
 
 interface TagsState {
-  tags: Tag[]
-  loading: boolean
-  error: string | null
+  tags: Tag[];
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: TagsState = {
   tags: [],
   loading: false,
   error: null,
-}
+};
+
+export const tagsApi = createApi({
+  reducerPath: "tagsApi",
+  baseQuery: fetchBaseQuery({ baseUrl: "https://api.stackexchange.com/2.3/tags" }),
+  tagTypes: ['Tags'],
+  endpoints: (builder) => ({
+    getTags: builder.query<TagData, { page: number; pageSize: number; order: string; sort: string }>({
+      query: ({ page, pageSize, order, sort }) => ({
+        url: `?page=${page}&pagesize=${pageSize}&order=${order}&sort=${sort}&site=stackoverflow`,
+      }),
+    }),
+  }),
+});
 
 const tagsSlice = createSlice({
   name: "tags",
   initialState,
   reducers: {
     fetchTagsStart(state) {
-      state.loading = true
-      state.error = null
+      state.loading = true;
+      state.error = null;
     },
     fetchTagsSuccess(state, action: PayloadAction<Tag[]>) {
-      state.loading = false
-      state.tags = action.payload
+      state.loading = false;
+      state.tags = action.payload;
     },
     fetchTagsFailure(state, action: PayloadAction<string>) {
-      state.loading = false
-      state.error = action.payload
+      state.loading = false;
+      state.error = action.payload;
     },
   },
-})
+});
 
-export const { fetchTagsStart, fetchTagsSuccess, fetchTagsFailure } =
-  tagsSlice.actions
+export const {
+  useGetTagsQuery
+} = tagsApi
 
-export const fetchTags = 
-  (page: number, pageSize: number, order: string, sort: string) => async (dispatch: any) => {
-    dispatch(fetchTagsStart())
-    try {
-      const response = await axios.get(
-        `https://api.stackexchange.com/2.3/tags?page=${page}&pagesize=${pageSize}&order=${order}&sort=${sort}&site=stackoverflow`,
-      )
-      dispatch(fetchTagsSuccess(response.data.items))
-    } catch (error) {
-      dispatch(fetchTagsFailure("Error fetching data"))
-    }
-  }
-
-export const selectTags = (state: { tags: TagsState }) => state.tags.tags
-export const selectTagsLoading = (state: { tags: TagsState }) =>
-  state.tags.loading
-export const selectTagsError = (state: { tags: TagsState }) => state.tags.error
-
-export default tagsSlice.reducer
+export default tagsSlice.reducer;

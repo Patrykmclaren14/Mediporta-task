@@ -1,4 +1,5 @@
-import { ChangeEvent, useEffect } from "react"
+import PropTypes from 'prop-types';
+import { ChangeEvent, useState } from "react";
 import {
   Box,
   MenuItem,
@@ -14,60 +15,68 @@ import {
   TableRow,
   TableSortLabel,
   useTheme,
-} from "@mui/material"
-import {
-  useGetTagsQuery,
-} from "../store/tagsSlice"
-import { useSearchParams } from "react-router-dom"
-import SkeletonLoader from "../SkeletonLoader"
-import Error from "../Error"
-import TagTableRow from "../TagTableRow"
+} from "@mui/material";
+import TagTableRow from "../TagTableRow";
+import SkeletonLoader from '../SkeletonLoader';
+import Error from "../Error";
 import Tag from "../types/Tag";
 
-const TagList = () => {
-  const [searchParams, setSearchParams] = useSearchParams()
+const TagList = ({ state, orderType, sortType }: { state: string, orderType: string, sortType: string }) => {
+  const theme = useTheme();
 
-  const theme = useTheme()
+  const [order, setOrder] = useState("desc");
+  const [sort, setSort] = useState("popular");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
-  const page = parseInt(searchParams.get("page") || "1")
-  const pageSize = parseInt(searchParams.get("rowsPerPage") || "10")
-  const order = searchParams.get("order") ?? "desc"
-  const sort = searchParams.get("sort") ?? "popular"
+  const tags = [
+    {
+      name: 'Java',
+      count: 1,
+    },
+    {
+      name: 'Python',
+      count: 3,
+    },
+    {
+      name: 'JavaScript',
+      count: 5,
+    },
+  ];
+
+  if (sortType === 'popular') {
+    tags.sort((a, b) => b.count - a.count); 
+  }
   
-  const { data: tags, error, isLoading, refetch } = useGetTagsQuery({
-    page,
-    pageSize,
-    order,
-    sort,
-  });
+  if (sortType === 'name') {
+    tags.sort((a, b) => a.name.localeCompare(b.name)); 
+  }
 
-  useEffect(() => {
-    refetch()
+  if (orderType === 'desc') {
+    tags.reverse()
+  }
 
-  }, [page, pageSize, order, sort, refetch, tags?.items])
+  const isLoading = state === 'isLoading';
+  const error = state === 'error';
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) => {
-    const nextPage = newPage + 1
-    searchParams.set('page', nextPage.toString())
-    setSearchParams(searchParams)
+    const nextPage = newPage + 1;
+    setPage(nextPage);
   }
 
   const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
-    searchParams.set('rowsPerPage', newRowsPerPage.toString());
-    setSearchParams(searchParams);
+    setPageSize(newRowsPerPage);
   };
 
   const handleOrderChange = (event: SelectChangeEvent<string>) => {
     const newOrder = event.target.value;
-    searchParams.set('order', newOrder);
-    setSearchParams(searchParams);
+    setOrder(newOrder);
   };
 
   const handleSortChange = (event: SelectChangeEvent<string>) => {
-    const newSort = event.target.value
-    searchParams.set('sort', newSort);
-    setSearchParams(searchParams)
+    const newSort = event.target.value;
+    setSort(newSort);
   }
 
   return (
@@ -126,12 +135,12 @@ const TagList = () => {
               )}
 
               {error && !isLoading && (
-                <Error errorMessage={typeof error === 'string' ? error : 'Error fetching data'} />
+                <Error errorMessage={'error'} />
               )}
 
-             {!isLoading && !error && (
-                tags?.items?.map((tag: Tag) => <TagTableRow key={tag.name} tag={tag} />
-             ))}
+              {!isLoading && !error && (
+                tags.map((tag: Tag) => <TagTableRow key={tag.name} tag={tag} />)
+              )}
 
             </TableBody>
           </Table>
@@ -141,4 +150,10 @@ const TagList = () => {
   )
 }
 
-export default TagList
+TagList.propTypes = {
+  state: PropTypes.oneOf(['error', 'isLoading', 'tags']),
+  orderType: PropTypes.oneOf(['asc', 'desc']),
+  sortType: PropTypes.oneOf(['popular', 'name']),
+};
+
+export default TagList;

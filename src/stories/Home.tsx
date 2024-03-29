@@ -8,7 +8,7 @@ const Home = ({size} : any) => {
           <div className={`relative h-64 overflow-hidden rounded-lg ${size === 'lg' ? 'lg:order-last lg:h-full' : 'sm:h-80'}`}>
             <img
               alt="Developer"
-              src={`/Developer.jpeg`}
+              src={process.env.PUBLIC_URL + '/Developer.jpeg'}
               className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
